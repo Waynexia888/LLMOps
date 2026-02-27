@@ -6,8 +6,9 @@ Description :
 import os
 
 from dotenv import load_dotenv
-from flask import request
 from openai import OpenAI
+
+from internal.schema.app_schema import ResponseReq
 
 load_dotenv()
 
@@ -24,7 +25,12 @@ class AppHandler:
     def response(self):
         """聊天接口"""
         # 1.提取用户的输入
-        query = request.json.get("query")
+        req = ResponseReq()
+        if not req.validate():
+            return req.errors
+
+        print("req--------------------", req.query.data)
+        query = req.query.data
 
         # 2. 构建OpenAI客户端
         client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
