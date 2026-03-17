@@ -3,10 +3,12 @@ Author      : Wayne Xia
 File Name   : app_handler.py
 Description :
 """
-import os
 
 from dotenv import load_dotenv
-from openai import OpenAI
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+# from openai import OpenAI
+from langchain_openai import ChatOpenAI
 
 from internal.exception import FailException
 from internal.schema.app_schema import ResponseReq
@@ -27,22 +29,21 @@ class AppHandler:
 
     def response(self):
         """聊天接口"""
-        # 1.提取用户的输入
+        # 1.提取用户的输入, POST
         req = ResponseReq()
         if not req.validate():
             return validate_error_json(req.errors)
 
-        print("req--------------------", req.query.data)
-        query = req.query.data
+        prompt = ChatPromptTemplate.from_template("{query}")
 
-        # 2. 构建OpenAI客户端
-        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        # 2. 构建OpenAI客户端, 并发起请求
+        # client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        llm = ChatOpenAI(model="gpt-4.1-mini")
 
-        # 3. 发起请求
-        content = client.responses.create(
-            model="gpt-4.1-mini",
-            instructions="你是一个聊天机器人，请根据用户的输入回复对应的信息。",
-            input=query,
-        )
+        ai_message = llm.invoke(prompt.invoke({"query": req.query.data}))
+        parser = StrOutputParser()
 
-        return success_json({"content": content.output_text})
+        # 3.解析响应内容
+        content = parser.parse(ai_message.content)
+
+        return success_json({"content": content})
