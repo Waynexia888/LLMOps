@@ -1,0 +1,19 @@
+"""
+Author      : Wayne Xia
+File Name   : 3_消息提示模版拼接
+Description :
+"""
+
+from langchain_core.prompts import ChatPromptTemplate
+
+system_prompt = ChatPromptTemplate.from_messages([
+    ("system", "你是OpenAI开发的聊天机器人，请根据用户的提问进行回复，我叫{username}"),
+])
+human_prompt = ChatPromptTemplate.from_messages([
+    ("human", "{query}"),
+])
+
+prompt = system_prompt + human_prompt
+
+print(prompt)
+print(prompt.format(username="慕小课", query="你好,你是?"))
