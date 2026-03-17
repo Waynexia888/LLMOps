@@ -8,6 +8,7 @@ import os
 from dotenv import load_dotenv
 from openai import OpenAI
 
+from internal.exception import FailException
 from internal.schema.app_schema import ResponseReq
 from pkg.response import success_json, validate_error_json
 
@@ -18,7 +19,8 @@ class AppHandler:
     """应用控制器"""
 
     def ping(self):
-        return {"ping": "pong"}
+        # return {"ping": "pong"}
+        raise FailException("数据未找到")
 
     def new(self):
         return {"hello": "world"}
