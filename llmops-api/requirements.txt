@@ -3,3 +3,6 @@ flask_wtf==1.2.2
 injector==0.24.0
 python-dotenv==1.2.1
 WTForms==3.2.1
+
+langchain-core
+langchain-openai
